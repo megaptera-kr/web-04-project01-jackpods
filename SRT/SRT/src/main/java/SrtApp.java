@@ -1,13 +1,14 @@
-import models.CheckTheTicketPanel;
-import models.ReservationPanel;
+import models.Region;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class SrtApp {
     private JFrame frame;
     private JPanel bottomPanel;
     private JPanel contentPanel;
+    private ArrayList<Region> regionList;
 
     public static void main(String[] args) {
         SrtApp application = new SrtApp();
@@ -15,8 +16,17 @@ public class SrtApp {
     }
 
     private void run() {
+        regionList = new ArrayList<>();
+
+        regionList.add(new Region("수서",0));
+        regionList.add(new Region("동탄",30));
+        regionList.add(new Region("평택",60));
+        regionList.add(new Region("천안",80));
+        regionList.add(new Region("오송",90));
+        regionList.add(new Region("대전",120));
+
         frame = new JFrame("SRT");
-        frame.setSize(400,800);
+        frame.setSize(350,700);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         panelSets();
@@ -57,7 +67,7 @@ public class SrtApp {
     private JButton createReservationButton() {
         JButton reservationButton = new JButton("승차권 예매");
         reservationButton.addActionListener(event->{
-            ReservationPanel reservationPanel = new ReservationPanel();
+            ReservationPanel reservationPanel = new ReservationPanel(regionList);
             showContentPanel(reservationPanel);
 
         });
