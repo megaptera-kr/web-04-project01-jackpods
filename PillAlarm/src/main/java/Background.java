@@ -4,10 +4,10 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-public class BackGroundPanel extends JPanel {
+public class Background extends JPanel {
     private final Image backGroundImage;
 
-    BackGroundPanel(String fileName) throws IOException {
+    Background(String fileName) throws IOException {
         backGroundImage = ImageIO.read(new File(fileName));
     }
 

@@ -1,53 +1,54 @@
-
 import javax.swing.*;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
+import java.awt.*;
 
-public class ManagePillPanel extends BackGroundPanel {
-
+public class ManagePillPanel extends JPanel {
 
     private final JTextField pillNameTextField;
+    private final JPanel textPanel;
+    private final JPanel buttonPanel;
+    private JList<String> pillList;
 
-    public ManagePillPanel() throws IOException {
-        super("/Users/jangjun-yeong/Desktop/Project1/PillAlarm/src/main/java/배경화면.png");
-        setLayout(null);
+    public ManagePillPanel(Pill pill, User user) {
+
+        this.setLayout(new GridLayout(4,1));
 
         question();
 
-        pillNameTextField = new JTextField();
-        pillNameTextField.setBounds(50, 100, 320, 70);
-        this.add(pillNameTextField);
+        textPanel = new JPanel();
+        textPanel.setLayout(new GridLayout(2,1));
+        this.add(textPanel);
 
-        addButton();
+        buttonPanel = new JPanel();
+        this.add(buttonPanel);
+
+        pillNameTextField = new JTextField();
+        textPanel.add(pillNameTextField);
+
+        addButton(pill);
 
         deleteButton();
 
-        backButton();
     }
 
     private void question() {
         JLabel label = new JLabel("무슨 약이에요?");
-        label.setBounds(50, 40, 80, 40);
         this.add(label);
     }
 
-    private void addButton() {
+    private void addButton(Pill pill) {
+        JLabel blank = new JLabel();
+        this.add(blank);
         JButton addButton = new JButton("추가하기");
-        addButton.setBounds(50, 410, 100, 30);
+        buttonPanel.add(addButton);
 
-        this.add(addButton);
-
-        DefaultListModel<String> model = new DefaultListModel<>();
-        JList<String> pillList = new JList<>(model);
-        pillList.setBounds(50, 180, 320, 200);
-
-        add(pillList);
+        pillList = new JList<>(pill.getPillList());
+        textPanel.add(pillList);
 
         addButton.addActionListener(event -> {
 
             String inputPillName = pillNameTextField.getText();
 
-            model.addElement(inputPillName);
+            pill.transfer(inputPillName);
 
             pillNameTextField.setText("");
         });
@@ -56,23 +57,14 @@ public class ManagePillPanel extends BackGroundPanel {
     private void deleteButton() {
         JButton deleteButton = new JButton("삭제하기");
         deleteButton.addActionListener(event -> {
+            int[] selectedIndices = pillList.getSelectedIndices();
+            if (selectedIndices.length > 0) {
+                DefaultListModel<String> model = (DefaultListModel<String>) pillList.getModel();
+                for (int i = selectedIndices.length - 1; i >= 0; i--) {
+                    model.remove(selectedIndices[i]);
+                }
+            }
         });
-        deleteButton.setBounds(170, 410, 100, 30);
-        this.add(deleteButton);
-    }
-
-    private void backButton() {
-        JButton backButton = new JButton("뒤로가기");
-        backButton.addActionListener(event -> {
-            AlarmApp alarmApp = new AlarmApp();
-            this.removeAll();
-
-            alarmApp.back();
-
-            this.setVisible(false);
-            this.setVisible(true);
-        });
-        backButton.setBounds(290, 410, 100, 30);
-        this.add(backButton);
+        buttonPanel.add(deleteButton);
     }
 }
