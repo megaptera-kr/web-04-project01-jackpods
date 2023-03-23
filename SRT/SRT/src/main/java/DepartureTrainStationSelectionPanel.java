@@ -40,7 +40,7 @@ public class DepartureTrainStationSelectionPanel extends JPanel {
         whereToGoDisplayPanel.add(new JLabel("       출발"));
         whereToGoDisplayPanel.add(new JLabel());
         whereToGoDisplayPanel.add(new JLabel("       도착"));
-        departureTextField = new JTextField();//출발 텍스트
+        departureTextField = new JTextField("수서");//출발 텍스트
         departureTextField.setEditable(false);
         whereToGoDisplayPanel.add(departureTextField);
         JButton switchButton = new JButton("switch");
@@ -53,37 +53,31 @@ public class DepartureTrainStationSelectionPanel extends JPanel {
     private void regionList(ArrayList<Region> regionList) {
         JButton suseoButton = new JButton("수서");
         suseoButton.addActionListener(event->{
-            departureTextField.setText(regionList.get(0).getRegion());
         });
         chooseButtonPanel.add(suseoButton);
 
         JButton dongtanButton = new JButton("동탄");
         dongtanButton.addActionListener(event->{
-            departureTextField.setText(regionList.get(1).getRegion());
         });
         chooseButtonPanel.add(dongtanButton);
 
         JButton pyeongtaekButton = new JButton("평택");
         pyeongtaekButton.addActionListener(event->{
-            departureTextField.setText(regionList.get(2).getRegion());
         });
         chooseButtonPanel.add(pyeongtaekButton);
 
         JButton cheonanButton = new JButton("천안");
         cheonanButton.addActionListener(event->{
-            departureTextField.setText(regionList.get(3).getRegion());
         });
         chooseButtonPanel.add(cheonanButton);
 
         JButton osongButton = new JButton("오송");
         osongButton.addActionListener(event->{
-            departureTextField.setText(regionList.get(4).getRegion());
         });
         chooseButtonPanel.add(osongButton);
 
         JButton daejeonButton = new JButton("대전");
         daejeonButton.addActionListener(event->{
-            departureTextField.setText(regionList.get(5).getRegion());
         });
         chooseButtonPanel.add(daejeonButton);
     }

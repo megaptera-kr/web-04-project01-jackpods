@@ -19,11 +19,4 @@ public class Region {
         return distance;
     }
 
-    public void transferDepartureRegion(String departureRegion) {
-        this.region = departureRegion;
-    }
-
-    public void transferArriveRegion(String arriveRegion) {
-        this.region = arriveRegion;
-    }
 }

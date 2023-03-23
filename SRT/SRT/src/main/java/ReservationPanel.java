@@ -1,8 +1,10 @@
 
-import models.Region;
+import models.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 
@@ -13,10 +15,14 @@ public class ReservationPanel extends JPanel {
     private JPanel dayPanel;
     private JPanel numberOfPeoplePanel;
     private JPanel trainSearchPanel;
-    private String[] day = {"20", "21", "22", "23", "24", "25"};
-    private int count = 0;
+    private String[] day = {"날짜를 선택해주세요","20", "21", "22", "23", "24", "25"};
+    private JLabel adultCountLabel;
+    private JLabel childrenCountLabel;
+    private JLabel childCountLabel;
+    private JLabel oldManCountLabel;
+    private int index;
 
-    public ReservationPanel(ArrayList<Region> regionList) {
+    public ReservationPanel(ArrayList<Region> regionList, ControlCenter controlCenter, ArrayList<Train> trainList, User user, Reservation reservation,ArrayList<String> saveList) {
 
         setLayout(new GridLayout(6, 1));
 
@@ -24,42 +30,30 @@ public class ReservationPanel extends JPanel {
 
         titleLabel();
 
-        timesButtonSets();
+        oneWay();
 
-        chooseRegionButtonSets(regionList);
+        choiceRegion(regionList, controlCenter);
 
-        departureDay();
+        choiceDepartureDay(controlCenter);
 
-        chooseNumberOfPeople();
+        numberOfPeople(controlCenter);
 
-        trainSearch();
+        trainSearch(controlCenter, trainList, user, reservation,saveList);
     }
 
     private void panelSets() {
 
-        appNamePanel = new JPanel();
-        appNamePanel.setBackground(Color.white);
-        appNamePanel.setPreferredSize(new Dimension(200, 50));
-        this.add(appNamePanel);
+        createAppNamePanel();
 
-        timesPanel = new JPanel();
-        this.add(timesPanel);
+        createTimesPanel();
 
-        pointPanel = new JPanel();
-        pointPanel.setBackground(Color.white);
-        this.add(pointPanel);
+        createPointPanel();
 
-        dayPanel = new JPanel();
-        dayPanel.setLayout(new GridLayout(2, 1));
-        this.add(dayPanel);
+        createDayPanel();
 
-        numberOfPeoplePanel = new JPanel();
-        numberOfPeoplePanel.setBackground(Color.white);
-        numberOfPeoplePanel.setLayout(new GridLayout(4, 4));
-        this.add(numberOfPeoplePanel);
+        createNumberOfPeoplePanel();
 
-        trainSearchPanel = new JPanel();
-        this.add(trainSearchPanel);
+        createTrainSearchPanel();
 
     }
 
@@ -68,7 +62,7 @@ public class ReservationPanel extends JPanel {
         appNamePanel.add(titleLabel);
     }
 
-    private void timesButtonSets() {
+    private void oneWay() {
         JButton oneWayButton = new JButton("편도");
         oneWayButton.addActionListener(event -> {
             this.setVisible(false);
@@ -78,7 +72,103 @@ public class ReservationPanel extends JPanel {
 
     }
 
-    private void chooseRegionButtonSets(ArrayList<Region> regionList) {
+    private void choiceRegion(ArrayList<Region> regionList, ControlCenter controlCenter) {
+        departureAreaActionButton(regionList);
+
+        pointPanel.add(new JLabel());//칸맞추기
+
+        arrivalAreaActionButton(regionList, controlCenter);
+
+        departureText();
+
+        pointPanel.add(new JLabel());//칸맞추기
+
+        arriveText(controlCenter);
+
+    }
+
+    private void choiceDepartureDay(ControlCenter controlCenter) {
+        JButton departureDayButton = new JButton("출발일자");
+        departureDayButton.addActionListener(event -> {
+        });
+        dayPanel.add(departureDayButton);
+
+        JComboBox departureDay = new JComboBox(day);
+        departureDay.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JComboBox<String> jcb = (JComboBox) e.getSource();
+                index = jcb.getSelectedIndex();
+                controlCenter.add(day[index]);
+
+            }
+        });
+        dayPanel.add(departureDay);
+    }
+
+    private void numberOfPeople(ControlCenter controlCenter) {
+        adultNumber(controlCenter);
+        childrenNumber(controlCenter);
+        childNumber(controlCenter);
+        oldManNumber(controlCenter);
+    }
+
+    private void createAppNamePanel() {
+        appNamePanel = new JPanel();
+        appNamePanel.setBackground(Color.white);
+        appNamePanel.setPreferredSize(new Dimension(200, 50));
+        this.add(appNamePanel);
+    }
+
+    private void createTimesPanel() {
+        timesPanel = new JPanel();
+        this.add(timesPanel);
+    }
+
+    private void createPointPanel() {
+        pointPanel = new JPanel();
+        pointPanel.setBackground(Color.white);
+        pointPanel.setLayout(new GridLayout(2, 3));
+        this.add(pointPanel);
+    }
+
+    private void createDayPanel() {
+        dayPanel = new JPanel();
+        dayPanel.setLayout(new GridLayout(2, 1));
+        this.add(dayPanel);
+    }
+
+    private void createNumberOfPeoplePanel() {
+        numberOfPeoplePanel = new JPanel();
+        numberOfPeoplePanel.setBackground(Color.white);
+        numberOfPeoplePanel.setLayout(new GridLayout(4, 4));
+        this.add(numberOfPeoplePanel);
+    }
+
+    private void createTrainSearchPanel() {
+        trainSearchPanel = new JPanel();
+        this.add(trainSearchPanel);
+    }
+
+    private void trainSearch(ControlCenter controlCenter, ArrayList<Train> trainList, User user, Reservation reservation,ArrayList<String> saveList) {
+        JButton trainSearchButton = new JButton("열차 조회하기");
+        trainSearchButton.addActionListener(event -> {
+            if (index == 0) {
+                JOptionPane.showMessageDialog(null, "날짜를 선택해주세요!");
+
+            }
+            if (index!=0) {
+                TrainReservationPanel trainReservationPanel = new TrainReservationPanel(controlCenter, trainList, user, reservation,saveList);
+                int sumOfPeople = controlCenter.getSum();
+                user.send(sumOfPeople);
+                updateDisplay(trainReservationPanel);
+            }
+
+        });
+        trainSearchPanel.add(trainSearchButton);
+    }
+
+
+    private void departureAreaActionButton(ArrayList<Region> regionList) {
         JButton departureAreaButton = new JButton("출발");
         departureAreaButton.addActionListener(event -> {
 
@@ -86,65 +176,129 @@ public class ReservationPanel extends JPanel {
             updateDisplay(departureTrainStationPanel);
         });
         pointPanel.add(departureAreaButton);
+    }
 
-        JButton switchButton = new JButton("switch");
-        pointPanel.add(switchButton);
-
+    private void arrivalAreaActionButton(ArrayList<Region> regionList, ControlCenter controlCenter) {
         JButton arrivalAreaButton = new JButton("도착");
         arrivalAreaButton.addActionListener(event -> {
 
-            ArriveTrainStationSelectionPanel arriveTrainStationPanel = new ArriveTrainStationSelectionPanel();
+            ArriveTrainStationSelectionPanel arriveTrainStationPanel = new ArriveTrainStationSelectionPanel(regionList, controlCenter);
             updateDisplay(arriveTrainStationPanel);
-
         });
         pointPanel.add(arrivalAreaButton);
     }
 
-    private void departureDay() {
-        JButton departureDayButton = new JButton("출발일");
-        departureDayButton.addActionListener(event -> {
-            JComboBox departureDay = new JComboBox(day);
+    private void departureText() {
+        JTextField departureTextField = new JTextField("수서");
+        departureTextField.setEditable(false);
+        pointPanel.add(departureTextField);
+    }
 
-            dayPanel.add(departureDay);
+    private void arriveText(ControlCenter controlCenter) {
+        JTextField arriveTextField = new JTextField(controlCenter.getRegionName());
+        arriveTextField.setEditable(false);
+        pointPanel.add(arriveTextField);
+    }
 
-            this.setVisible(false);
-            this.setVisible(true);
+    private void adultNumber(ControlCenter controlCenter) {
+        numberOfPeoplePanel.add(new JLabel("어른"));
 
+        JButton adultMinusButton = new JButton("-");
+        adultMinusButton.addActionListener(event -> {
+            if (controlCenter.getAdultCount() > 0) {
+                controlCenter.minusAdultCount();
+                adultCountLabel.setText(String.valueOf(controlCenter.getAdultCount()));
+            }
         });
-        dayPanel.add(departureDayButton);
-    }
+        numberOfPeoplePanel.add(adultMinusButton);
 
-    private void chooseNumberOfPeople() {
-
-        numberOfAdultControl("어른");
-
-        numberOfAdultControl("어린이");
-
-        numberOfAdultControl("유아");
-
-        numberOfAdultControl("경로");
-    }
-
-    private void numberOfAdultControl(String person) {
-        numberOfPeoplePanel.add(new JLabel(person));
-        JButton minusButton = new JButton("-");
-        numberOfPeoplePanel.add(minusButton);
-        System.out.println("label"+count);
-        JLabel adultCountLabel = new JLabel(String.valueOf(count));
+        adultCountLabel = new JLabel(String.valueOf(controlCenter.getAdultCount()));
         numberOfPeoplePanel.add(adultCountLabel);
-        JButton plusButton = new JButton("+");
-        plusButton.addActionListener(event->{
-//            count+=;  표 가격을 더한다.
+
+        JButton adultPlusButton = new JButton("+");
+        adultPlusButton.addActionListener(event -> {
+            controlCenter.plusAdultCount();
+            adultCountLabel.setText(String.valueOf(controlCenter.getAdultCount()));
+
             this.setVisible(false);
             this.setVisible(true);
-            System.out.println(""+count);
         });
-        numberOfPeoplePanel.add(plusButton);
+        numberOfPeoplePanel.add(adultPlusButton);
     }
 
-    private void trainSearch() {
-        JButton trainSearchButton = new JButton("열차 조회하기");
-        trainSearchPanel.add(trainSearchButton);
+    private void childrenNumber(ControlCenter controlCenter) {
+        numberOfPeoplePanel.add(new JLabel("어린이"));
+        JButton childrenMinusButton = new JButton("-");
+        childrenMinusButton.addActionListener(event -> {
+            if (controlCenter.getChildrenCount() > 0) {
+                controlCenter.minusChildrenCount();
+                childrenCountLabel.setText(String.valueOf(controlCenter.getChildrenCount()));
+            }
+        });
+        numberOfPeoplePanel.add(childrenMinusButton);
+
+        childrenCountLabel = new JLabel(String.valueOf(controlCenter.getChildrenCount()));
+        numberOfPeoplePanel.add(childrenCountLabel);
+
+        JButton childrenPlusButton = new JButton("+");
+        childrenPlusButton.addActionListener(event -> {
+            controlCenter.plusChildrenCount();
+            childrenCountLabel.setText(String.valueOf(controlCenter.getChildrenCount()));
+            this.setVisible(false);
+            this.setVisible(true);
+        });
+        numberOfPeoplePanel.add(childrenPlusButton);
+    }
+
+    private void childNumber(ControlCenter controlCenter) {
+        numberOfPeoplePanel.add(new JLabel("유아"));
+
+        JButton childMinusButton = new JButton("-");
+        childMinusButton.addActionListener(event -> {
+            if (controlCenter.getChildCount() > 0) {
+                controlCenter.minusChildCount();
+                childCountLabel.setText(String.valueOf(controlCenter.getChildCount()));
+            }
+        });
+        numberOfPeoplePanel.add(childMinusButton);
+
+        childCountLabel = new JLabel(String.valueOf(controlCenter.getChildCount()));
+        numberOfPeoplePanel.add(childCountLabel);
+
+        JButton childPlusButton = new JButton("+");
+        childPlusButton.addActionListener(event -> {
+            controlCenter.plusChildCount();
+            childCountLabel.setText(String.valueOf(controlCenter.getChildCount()));
+            this.setVisible(false);
+            this.setVisible(true);
+        });
+        numberOfPeoplePanel.add(childPlusButton);
+    }
+
+    private void oldManNumber(ControlCenter controlCenter) {
+        numberOfPeoplePanel.add(new JLabel("경로인"));
+
+        JButton oldManMinusButton = new JButton("-");
+        oldManMinusButton.addActionListener(event -> {
+            if (controlCenter.getOldManCount() > 0) {
+                controlCenter.minusOldManCount();
+                oldManCountLabel.setText(String.valueOf(controlCenter.getOldManCount()));
+            }
+
+        });
+        numberOfPeoplePanel.add(oldManMinusButton);
+
+        oldManCountLabel = new JLabel(String.valueOf(controlCenter.getOldManCount()));
+        this.setVisible(false);
+        this.setVisible(true);
+        numberOfPeoplePanel.add(oldManCountLabel);
+
+        JButton oldManPlusButton = new JButton("+");
+        oldManPlusButton.addActionListener(event -> {
+            controlCenter.plusOldManCount();
+            oldManCountLabel.setText(String.valueOf(controlCenter.getOldManCount()));
+        });
+        numberOfPeoplePanel.add(oldManPlusButton);
     }
 
     private void updateDisplay(JPanel panel) {
