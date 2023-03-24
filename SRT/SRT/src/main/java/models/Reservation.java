@@ -1,34 +1,34 @@
 package models;
 
+import java.util.ArrayList;
+
 public class Reservation {
-    private int departureHour = 0;
 
     private String number;
     private String trainCode = "";
-    private int arriveHour = 0;
-    private int arriveMinute = 0;
-
+    private String departureTime = "";
+    private String arriveTimes = "";
 
 
     public Reservation(String number) {
         this.number = number;
     }
 
-    public void transferInformation( int arriveHour, int arriveMinute) {
-        this.arriveHour = arriveHour;
-        this.arriveMinute = arriveMinute;
-    }
-
-    public int getArriveHour() {
-        return arriveHour;
-    }
-
-    public int getArriveMinute() {
-        return arriveMinute;
-    }
-
-
-    public void transfer(String trainCode) {
+    public void transfer(String trainCode,String departureTime,String arriveTimes) {
         this.trainCode = trainCode;
+        this.departureTime = departureTime;
+        this.arriveTimes = arriveTimes;
+    }
+
+    public String getTrainName() {
+        return trainCode;
+    }
+
+    public String getDepartureTime() {
+        return departureTime;
+    }
+
+    public String getArriveTimes() {
+        return arriveTimes;
     }
 }

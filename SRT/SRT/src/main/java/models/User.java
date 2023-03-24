@@ -3,12 +3,14 @@ package models;
 import java.util.ArrayList;
 
 public class User {
-    private String name;
+    private String id;
+    private String password;
     private final ArrayList<String> seatList = new ArrayList<>();
     private int sumNumber = 0;
 
-    public User(String name, String seatNumber) {
-        this.name = name;
+    public User(String id, String password) {
+        this.id = id;
+        this.password = password;
     }
 
     public void transfer(String seatNumber) {
@@ -27,7 +29,15 @@ public class User {
         sumNumber -= 1;
     }
 
-    public ArrayList<String> getSeatList() {
-        return seatList;
+    public String getId() {
+        return id;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void transferEdit(String text) {
+
     }
 }

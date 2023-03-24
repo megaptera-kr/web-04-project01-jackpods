@@ -1,7 +1,4 @@
-import models.ControlCenter;
-import models.Reservation;
-import models.Train;
-import models.User;
+import models.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +13,7 @@ public class ReservationSeatPanel extends JPanel {
     private JPanel checkedListPanel;
     private ArrayList<String> checkedList = new ArrayList<>();
 
-    ReservationSeatPanel(ControlCenter controlCenter, User user,ArrayList<Train> trainList,Reservation reservation,ArrayList<String> saveList) {
+    ReservationSeatPanel(ControlCenter controlCenter, User user,ArrayList<Train> trainList,Reservation reservation,ArrayList<String> saveList,CompletePayment completePayment) {
 
         setLayout(new GridLayout(3, 1));
 
@@ -26,8 +23,9 @@ public class ReservationSeatPanel extends JPanel {
 
         checkedList(controlCenter,user);
 
-        payment(controlCenter,reservation,saveList);
+        payment(controlCenter,reservation,saveList,completePayment);
 
+//        Runtime.getRuntime().addShutdownHook(new Thread(this::saveCheckedSeats));
     }
 
     private void panelSet(ControlCenter controlCenter) {
@@ -140,7 +138,7 @@ public class ReservationSeatPanel extends JPanel {
     }
 
     private void checkedList(ControlCenter controlCenter,User user) {
-        for (int i = 0; i < controlCenter.getSum(); i += 1) {
+        for (int i = 0; i < controlCenter.getPassengerSum(); i += 1) {
             JButton deleteButton = new JButton("X");
             checkedListPanel.add(deleteButton);
 
@@ -148,10 +146,10 @@ public class ReservationSeatPanel extends JPanel {
         }
     }
 
-    private void payment(ControlCenter controlCenter,  Reservation reservation,ArrayList<String> saveList) {
+    private void payment(ControlCenter controlCenter, Reservation reservation, ArrayList<String> saveList, CompletePayment completePayment) {
         JButton paymentButton = new JButton("결제하기");
         paymentButton.addActionListener(event->{
-            PaymentPanel paymentPanel = new PaymentPanel(controlCenter,reservation,saveList);
+            PaymentPanel paymentPanel = new PaymentPanel(controlCenter,reservation,saveList,checkedList,completePayment);
             this.removeAll();
             this.add(paymentPanel);
             this.setVisible(false);
@@ -159,4 +157,16 @@ public class ReservationSeatPanel extends JPanel {
         });
         paymentButtonPanel.add(paymentButton);
     }
+
+    private void saveCheckedSeats() throws IOException {
+        FileOutputStream fileOutputStream = new FileOutputStream("seatsInformation.csv");
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+        objectOutputStream.writeObject(checkedList);
+        objectOutputStream.close();
+        fileOutputStream.close();
+    }
+
+
+
 }
+

@@ -14,7 +14,7 @@ public class ControlCenter {
     private int oldManCount = 0;
     private int priceSum = 0;
 
-    public ControlCenter( String regionName, String day, int estimatedTimeHour, int estimatedTimeMinute) {
+    public ControlCenter(String regionName, String day, int estimatedTimeHour, int estimatedTimeMinute) {
 
         this.regionName = regionName;
         this.day = day;
@@ -45,13 +45,8 @@ public class ControlCenter {
 
         if (distance == 120) {
             this.price += 20_000;
-            this.estimatedTimeHour += 1;
-            this.estimatedTimeMinute += 1;
+            this.estimatedTimeMinute += 55;
         }
-    }
-
-    public int getPrice() {
-        return price;
     }
 
     public void resetPrice() {
@@ -131,14 +126,18 @@ public class ControlCenter {
         return estimatedTimeMinute;
     }
 
-    public int getSum() {
+    public int getPassengerSum() {
 
         return adultCount + childrenCount + childCount + oldManCount;
     }
 
 
     public int getPriceSum() {
-        int sum = (int) (price*adultCount + price*childrenCount*0.25 + price*childCount*0.5+price*oldManCount*0.75);
+        int sum = (int) (price * adultCount + price * childrenCount * 0.25 + price * childCount * 0.5 + price * oldManCount * 0.75);
         return sum;
+    }
+
+    public void editRegion(String texts) {
+        this.regionName = texts;
     }
 }

@@ -1,5 +1,5 @@
 import models.ControlCenter;
-import models.Region; //TODO 왜 models를 해야하지?
+import models.Region;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +11,7 @@ public class ArriveTrainStationSelectionPanel extends JPanel {
     private JPanel regionListPanel;
     private JPanel chooseButtonPanel;
     private JTextField arriveTextField;
+    public JButton dongtanButton;
 
     ArriveTrainStationSelectionPanel(ArrayList<Region> regionList, ControlCenter controlCenter) {
         setLayout(new GridLayout(3, 1));
@@ -22,7 +23,7 @@ public class ArriveTrainStationSelectionPanel extends JPanel {
         regionList(regionList, controlCenter);
     }
 
-    private void panelSets() {
+    public void panelSets() {
         whereToGoDisplayPanel = new JPanel();
         whereToGoDisplayPanel.setLayout(new GridLayout(2, 3));
         this.add(whereToGoDisplayPanel);
@@ -35,25 +36,24 @@ public class ArriveTrainStationSelectionPanel extends JPanel {
         this.add(chooseButtonPanel);
     }
 
-    private void whereToGoDisplay(ControlCenter controlCenter) {
+    public void whereToGoDisplay(ControlCenter controlCenter) {
         whereToGoDisplayPanel.add(new JLabel("       출발"));
         whereToGoDisplayPanel.add(new JLabel());
         whereToGoDisplayPanel.add(new JLabel("       도착"));
         JTextField departureTextField = new JTextField("수서");//출발지
         departureTextField.setEditable(false);
         whereToGoDisplayPanel.add(departureTextField);
-        JButton switchButton = new JButton("switch");
-        whereToGoDisplayPanel.add(switchButton);
+        whereToGoDisplayPanel.add(new JLabel());
         arriveTextField = new JTextField(controlCenter.getRegionName());//도착지
         arriveTextField.setEditable(false);
         whereToGoDisplayPanel.add(arriveTextField);
     }
 
-    private void regionList(ArrayList<Region> regionList, ControlCenter controlCenter) {
+    public void regionList(ArrayList<Region> regionList, ControlCenter controlCenter) {
         JButton suseoButton = new JButton("수서");
         chooseButtonPanel.add(suseoButton);
 
-        JButton dongtanButton = new JButton("동탄");
+        dongtanButton = new JButton("동탄");
         dongtanButton.addActionListener(event -> {
                 arriveTextField.setText("동탄");
                 controlCenter.resetPrice();
@@ -68,7 +68,6 @@ public class ArriveTrainStationSelectionPanel extends JPanel {
                 controlCenter.resetPrice();
                 controlCenter.transfer(regionList.get(2).getDistance());
                 controlCenter.send(regionList.get(2).getRegion());
-                System.out.println("평택"+controlCenter.getPrice());
         });
         chooseButtonPanel.add(pyeongtaekButton);
 
@@ -78,7 +77,7 @@ public class ArriveTrainStationSelectionPanel extends JPanel {
             controlCenter.resetPrice();
             controlCenter.transfer(regionList.get(3).getDistance());
             controlCenter.send(regionList.get(3).getRegion());
-            cheonanButton.setEnabled(false);
+
         });
         chooseButtonPanel.add(cheonanButton);
 

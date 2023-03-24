@@ -15,14 +15,14 @@ public class ReservationPanel extends JPanel {
     private JPanel dayPanel;
     private JPanel numberOfPeoplePanel;
     private JPanel trainSearchPanel;
-    private String[] day = {"날짜를 선택해주세요","20", "21", "22", "23", "24", "25"};
+    private String[] day = {"날짜를 선택해주세요", "20", "21", "22", "23", "24", "25"};
     private JLabel adultCountLabel;
     private JLabel childrenCountLabel;
     private JLabel childCountLabel;
     private JLabel oldManCountLabel;
     private int index;
 
-    public ReservationPanel(ArrayList<Region> regionList, ControlCenter controlCenter, ArrayList<Train> trainList, User user, Reservation reservation,ArrayList<String> saveList) {
+    public ReservationPanel(ArrayList<Region> regionList, ControlCenter controlCenter, ArrayList<Train> trainList, User user, Reservation reservation, ArrayList<String> saveList, CompletePayment completePayment) {
 
         setLayout(new GridLayout(6, 1));
 
@@ -38,7 +38,7 @@ public class ReservationPanel extends JPanel {
 
         numberOfPeople(controlCenter);
 
-        trainSearch(controlCenter, trainList, user, reservation,saveList);
+        trainSearch(controlCenter, trainList, user, reservation, saveList, completePayment);
     }
 
     private void panelSets() {
@@ -149,16 +149,17 @@ public class ReservationPanel extends JPanel {
         this.add(trainSearchPanel);
     }
 
-    private void trainSearch(ControlCenter controlCenter, ArrayList<Train> trainList, User user, Reservation reservation,ArrayList<String> saveList) {
+    private void trainSearch(ControlCenter controlCenter, ArrayList<Train> trainList, User user, Reservation reservation, ArrayList<String> saveList, CompletePayment completePayment) {
         JButton trainSearchButton = new JButton("열차 조회하기");
         trainSearchButton.addActionListener(event -> {
             if (index == 0) {
                 JOptionPane.showMessageDialog(null, "날짜를 선택해주세요!");
 
             }
-            if (index!=0) {
-                TrainReservationPanel trainReservationPanel = new TrainReservationPanel(controlCenter, trainList, user, reservation,saveList);
-                int sumOfPeople = controlCenter.getSum();
+            if (index != 0) {
+
+                TrainReservationPanel trainReservationPanel = new TrainReservationPanel(controlCenter, trainList, user, reservation, saveList, completePayment);
+                int sumOfPeople = controlCenter.getPassengerSum();
                 user.send(sumOfPeople);
                 updateDisplay(trainReservationPanel);
             }
@@ -217,8 +218,11 @@ public class ReservationPanel extends JPanel {
 
         JButton adultPlusButton = new JButton("+");
         adultPlusButton.addActionListener(event -> {
-            controlCenter.plusAdultCount();
-            adultCountLabel.setText(String.valueOf(controlCenter.getAdultCount()));
+            if (controlCenter.getAdultCount() < 4 && controlCenter.getPassengerSum()<11) {
+                controlCenter.plusAdultCount();
+                adultCountLabel.setText(String.valueOf(controlCenter.getAdultCount()));
+            }
+
 
             this.setVisible(false);
             this.setVisible(true);
@@ -242,10 +246,13 @@ public class ReservationPanel extends JPanel {
 
         JButton childrenPlusButton = new JButton("+");
         childrenPlusButton.addActionListener(event -> {
-            controlCenter.plusChildrenCount();
-            childrenCountLabel.setText(String.valueOf(controlCenter.getChildrenCount()));
-            this.setVisible(false);
-            this.setVisible(true);
+            if (controlCenter.getChildrenCount() < 4 && controlCenter.getPassengerSum()<11){
+                controlCenter.plusChildrenCount();
+                childrenCountLabel.setText(String.valueOf(controlCenter.getChildrenCount()));
+                this.setVisible(false);
+                this.setVisible(true);
+            }
+
         });
         numberOfPeoplePanel.add(childrenPlusButton);
     }
@@ -267,8 +274,10 @@ public class ReservationPanel extends JPanel {
 
         JButton childPlusButton = new JButton("+");
         childPlusButton.addActionListener(event -> {
-            controlCenter.plusChildCount();
-            childCountLabel.setText(String.valueOf(controlCenter.getChildCount()));
+            if (controlCenter.getChildCount() < 4 && controlCenter.getPassengerSum()<11) {
+                controlCenter.plusChildCount();
+                childCountLabel.setText(String.valueOf(controlCenter.getChildCount()));
+            }
             this.setVisible(false);
             this.setVisible(true);
         });
@@ -295,8 +304,10 @@ public class ReservationPanel extends JPanel {
 
         JButton oldManPlusButton = new JButton("+");
         oldManPlusButton.addActionListener(event -> {
-            controlCenter.plusOldManCount();
-            oldManCountLabel.setText(String.valueOf(controlCenter.getOldManCount()));
+            if (controlCenter.getOldManCount() < 4 && controlCenter.getPassengerSum()<11) {
+                controlCenter.plusOldManCount();
+                oldManCountLabel.setText(String.valueOf(controlCenter.getOldManCount()));
+            }
         });
         numberOfPeoplePanel.add(oldManPlusButton);
     }

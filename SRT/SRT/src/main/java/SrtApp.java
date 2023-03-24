@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SrtApp {
     private JFrame frame;
@@ -15,6 +16,10 @@ public class SrtApp {
     private User user;
     private Reservation reservation;
     private ArrayList<String> saveList = new ArrayList<>();
+    private List<User> userList = new ArrayList<>();
+    private List<Token> tokenList = new ArrayList<>();
+    private CompletePayment completePayment;
+    private TemporaryStorage temporaryStorage;
 
     public static void main(String[] args) {
         SrtApp application = new SrtApp();
@@ -23,12 +28,15 @@ public class SrtApp {
 
     private void run() {
 
-
         trainInformation();
+
+        temporaryStorage = new TemporaryStorage();
 
         reservation = new Reservation("");
 
         controlCenter = new ControlCenter("","",0,0);
+
+        completePayment = new CompletePayment();
 
         ReginListInformation();
 
@@ -38,18 +46,20 @@ public class SrtApp {
 
         panelSets();
 
-        categoryButton();
+        categoryButton(completePayment);
+
+//        login(userList,tokenList);
 
         frame.setVisible(true);
     }
 
     private void trainInformation() {
         trainList = new ArrayList<>();
-        trainList.add( new Train("SRT 343", 15,"05"));
-        trainList.add( new Train("SRT 351", 16,"05"));
-        trainList.add( new Train("SRT 361", 18,"37"));
+        trainList.add( new Train("SRT 343", 15,"00"));
+        trainList.add( new Train("SRT 351", 16,"00"));
+        trainList.add( new Train("SRT 361", 18,"00"));
         trainList.add( new Train("SRT 363", 19,"00"));
-        trainList.add( new Train("SRT 371", 20,"28"));
+        trainList.add( new Train("SRT 371", 20,"00"));
         trainList.add( new Train("SRT 377", 22,"00"));
     }
 
@@ -65,7 +75,7 @@ public class SrtApp {
     }
 
     private void User() {
-        user = new User("jack","");
+        user = new User("jack","1234");
     }
 
     private void frameSet() {
@@ -91,21 +101,53 @@ public class SrtApp {
         frame.add(contentPanel);
     }
 
-    private void categoryButton() {
-        bottomPanel.add(createReservationButton());
-
-        bottomPanel.add(createCheckTicketButton());
-
-        JButton profileEditButton = new JButton("회원정보 관리");
-        bottomPanel.add(profileEditButton);
-
-    }
+//    private void login(List<User> userList,List<Token>tokenList) {
 
 
-    private JButton createReservationButton() {
+//        JLabel idLabel = new JLabel("아이디: ");
+//        contentPanel.add(idLabel);
+//
+//        JTextField idTextField = new JTextField(30);
+//        contentPanel.add(idTextField);
+//
+//        JLabel passwordLabel = new JLabel("비밀번호: ");
+//        contentPanel.add(passwordLabel);
+//
+//        JTextField passwordTextField = new JTextField(30);
+//        contentPanel.add(passwordTextField);
+//
+//        JButton loginButton = new JButton("로그인");
+//        contentPanel.add(loginButton);
+//
+//        loginButton.addActionListener((event) -> {
+//            for (User user : userList) {
+//                if (idTextField.getText().equals(user.getId()) && passwordTextField.getText().equals(user.getPassword())) {
+//                    Token token = new Token(idTextField.getText());
+//                    tokenList.add(token);
+//                }
+//            }
+//            idTextField.setText("");
+//            passwordTextField.setText("");
+//        });
+//
+//        JButton registerButton = new JButton("회원가입");
+//        contentPanel.add(registerButton);
+//
+//        registerButton.addActionListener((event) -> {
+//            User user = new User(idTextField.getText(), passwordTextField.getText());
+//            userList.add(user);
+//
+//            idTextField.setText("");
+//            passwordTextField.setText("");
+//        });
+//    }
+
+
+
+    private JButton createReservationButton(CompletePayment completePayment) {
         JButton reservationButton = new JButton("승차권 예매");
         reservationButton.addActionListener(event->{
-            ReservationPanel reservationPanel = new ReservationPanel(regionList,controlCenter,trainList,user,reservation,saveList);
+            ReservationPanel reservationPanel = new ReservationPanel(regionList,controlCenter,trainList,user,reservation,saveList,completePayment);
             showContentPanel(reservationPanel);
 
         });
@@ -117,7 +159,7 @@ public class SrtApp {
         checkTheTicketButton.addActionListener(event->{
             CheckTheTicketPanel checkTheTicketPanel = null;
             try {
-                checkTheTicketPanel = new CheckTheTicketPanel(controlCenter,reservation,saveList);
+                checkTheTicketPanel = new CheckTheTicketPanel(regionList,controlCenter,reservation,saveList,completePayment,temporaryStorage);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (ClassNotFoundException e) {
@@ -126,6 +168,21 @@ public class SrtApp {
             showContentPanel(checkTheTicketPanel);
         });
         return checkTheTicketButton;
+    }
+
+    private void categoryButton(CompletePayment completePayment) {
+        bottomPanel.add(createReservationButton(completePayment));
+
+        bottomPanel.add(createCheckTicketButton());
+
+        JButton profileEditButton = new JButton("회원정보 관리");
+        profileEditButton.addActionListener(event->{
+            ProfileEditPanel profileEditPanel = new ProfileEditPanel(completePayment,user);
+            showContentPanel(profileEditPanel);
+            showContentPanel(profileEditPanel);
+        });
+        bottomPanel.add(profileEditButton);
+
     }
 
     private void showContentPanel(JPanel Panel) {
